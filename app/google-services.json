@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "358275720127",
+    "project_id": "keepit-2137",
+    "storage_bucket": "keepit-2137.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:358275720127:android:012f6d592a2170b7d1370a",
+        "android_client_info": {
+          "package_name": "com.amrit.practice.keepit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "358275720127-vcpjnoi95h11nuil0ob917jhu1ono59u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.amrit.practice.keepit",
+            "certificate_hash": "c14034c712f2014e4a9890e2ed3049b47d265b63"
+          }
+        },
+        {
+          "client_id": "358275720127-evbvvj371ra5vhb1n8v74k0sn3c15v4v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKfzCjqvSRFQXrJq2cy32RoaHUQYaEjCQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "358275720127-evbvvj371ra5vhb1n8v74k0sn3c15v4v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
