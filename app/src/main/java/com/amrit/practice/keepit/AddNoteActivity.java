@@ -24,6 +24,13 @@ import androidx.core.content.ContextCompat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.mlkit.common.model.DownloadConditions;
+import com.google.mlkit.nl.languageid.LanguageIdentification;
+import com.google.mlkit.nl.languageid.LanguageIdentifier;
+import com.google.mlkit.nl.translate.TranslateLanguage;
+import com.google.mlkit.nl.translate.Translation;
+import com.google.mlkit.nl.translate.Translator;
+import com.google.mlkit.nl.translate.TranslatorOptions;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -156,8 +163,53 @@ public class AddNoteActivity extends AppCompatActivity {
         } else if (menuItem.getItemId() == R.id.speech_to_text) {
             checkAudioPermission();
             return true;
+        } else if (menuItem.getItemId() == R.id.detect_language) {
+            detectLanguage();
+            return true;
+        } else if (menuItem.getItemId() == R.id.translate_language) {
+            translateToEnglish();
+            return true;
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    private void translateToEnglish() {
+        TranslatorOptions options = new TranslatorOptions.Builder()
+                .setSourceLanguage(TranslateLanguage.ENGLISH)
+                .setTargetLanguage(TranslateLanguage.HINDI)
+                .build();
+        final Translator translator = Translation.getClient(options);
+        DownloadConditions conditions = new DownloadConditions.Builder()
+                .requireWifi()
+                .build();
+        translator.downloadModelIfNeeded(conditions)
+                .addOnSuccessListener(
+                        unused -> {
+                            String text = body.getText().toString();
+                            if (text.isEmpty()) {
+                                showToast("Add some text to detect");
+                                return;
+                            }
+                            translator.translate(text)
+                                    .addOnSuccessListener(this::showToast)
+                                    .addOnFailureListener(e -> showToast(e.toString()));
+                        })
+                .addOnFailureListener(
+                        e -> showToast(e.toString()));
+    }
+
+    private void detectLanguage() {
+        LanguageIdentifier identifier = LanguageIdentification.getClient();
+        getLifecycle().addObserver(identifier);
+
+        String text = body.getText().toString();
+        if (text.isEmpty()) {
+            showToast("Add some text to detect");
+            return;
+        }
+        identifier.identifyLanguage(text)
+                .addOnSuccessListener(this::showToast)
+                .addOnFailureListener(e -> showToast(e.toString()));
     }
 
     private void checkAudioPermission() {

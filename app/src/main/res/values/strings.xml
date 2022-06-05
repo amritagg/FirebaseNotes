@@ -7,4 +7,6 @@
     <string name="add_drawing">Add Drawing</string>
     <string name="open_camera">Open Camera</string>
     <string name="speak">Speak</string>
+    <string name="detect_language">Detect Language</string>
+    <string name="translate">Translate</string>
 </resources>
