@@ -10,6 +10,7 @@ public class Constants {
     public static final String INTENT_DRAWING_STROKES = "drawing_strokes";
     public static final String INTENT_DRAW_STROKES = "draw_strokes";
     public static final String INTENT_DRAW_STROKES_FROM_FIREBASE = "draw_from_firebase";
+    public static final String INTENT_MEDIA_URI = "image_uri";
     public static final String ADD_DRAW_BUNDLE = "add_draw_bundle";
 
     public static String FIRE_USER = "user";

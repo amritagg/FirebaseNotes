@@ -1,6 +1,7 @@
 package com.amrit.practice.keepit;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -44,14 +45,12 @@ public class AddNoteActivity extends AppCompatActivity {
     public static final Integer RecordAudioRequestCode = 1;
     DatabaseReference mDb;
     EditText head, body;
-    String headText, bodyText;
-    long date;
-    String userId;
-    String prevBody, prevHead;
-    long prevDate;
-    String prevId;
+    String headText, bodyText, userId, prevBody, prevHead, prevId;
+    long date, prevDate;
     boolean update;
     ArrayList<Stroke> list;
+    Toast mToast;
+
     ActivityResultLauncher<Intent> startDrawActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -59,12 +58,26 @@ public class AddNoteActivity extends AppCompatActivity {
                     Intent data = result.getData();
                     assert data != null;
                     Bundle bundle = data.getExtras();
+                    String text = bundle.getString(Constants.INTENT_MEDIA_URI);
+                    body.append("\t" + text);
                     list = bundle.getParcelableArrayList(Constants.INTENT_DRAWING_STROKES);
-                    Log.e(LOG_TAG, list.toString());
+//                    Log.e(LOG_TAG, list.toString());
                 }
             }
     );
-    Toast mToast;
+
+    ActivityResultLauncher<Intent> captureImageForText = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    assert data != null;
+                    Bundle bundle = data.getExtras();
+                    String uriString = bundle.getString(Constants.INTENT_MEDIA_URI);
+                    body.append(uriString);
+                }
+            }
+    );
     private SpeechRecognizer speechRecognizer;
 
     @Override
@@ -111,7 +124,7 @@ public class AddNoteActivity extends AppCompatActivity {
             id = prevId;
             if (prevHead.equals(headText) && prevBody.equals(bodyText)) return;
             if (headText.isEmpty() && bodyText.isEmpty()) {
-                mDb.child(id).removeValue();
+                mDb.child(id).getRef().removeValue();
                 showToast("Note deleted!");
                 return;
             }
@@ -129,7 +142,6 @@ public class AddNoteActivity extends AppCompatActivity {
         newMessageMap.put(Constants.FIRE_NOTE_HEAD, headText);
         newMessageMap.put(Constants.FIRE_NOTE_BODY, bodyText);
         newMessageMap.put(Constants.FIRE_NOTE_LAST_UPDATE, date);
-//        if (list != null) newMessageMap.put(Constants.FIRE_NOTE_DRAW_STROKE, list);
         messageDb.updateChildren(newMessageMap);
         Log.e(LOG_TAG, "Messaged pushed");
     }
@@ -140,48 +152,50 @@ public class AddNoteActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (menuItem.getItemId() == android.R.id.home) {
-            saveNote();
-            finish();
-            return true;
-        } else if (menuItem.getItemId() == R.id.add_drawing) {
-            Intent intent = new Intent(this, DrawActivity.class);
-            if (update) {
-                if (list != null) {
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelableArrayList(Constants.INTENT_DRAW_STROKES, list);
-                    intent.putExtra(Constants.ADD_DRAW_BUNDLE, bundle);
+        int id = menuItem.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                saveNote();
+                finish();
+                break;
+            case R.id.add_drawing:
+                Intent intent = new Intent(this, DrawActivity.class);
+                if (update) {
+                    if (list != null) {
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelableArrayList(Constants.INTENT_DRAW_STROKES, list);
+                        intent.putExtra(Constants.ADD_DRAW_BUNDLE, bundle);
+                    }
                 }
-            }
-            startDrawActivity.launch(intent);
-            return true;
-        } else if (menuItem.getItemId() == R.id.open_camera) {
-            Intent intent = new Intent(this, CameraActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (menuItem.getItemId() == R.id.speech_to_text) {
-            checkAudioPermission();
-            return true;
-        } else if (menuItem.getItemId() == R.id.detect_language) {
-            detectLanguage();
-            return true;
-        } else if (menuItem.getItemId() == R.id.translate_language) {
-            translateToEnglish();
-            return true;
+                startDrawActivity.launch(intent);
+                break;
+            case R.id.open_camera:
+                Intent intent1 = new Intent(this, CameraActivity.class);
+                captureImageForText.launch(intent1);
+                break;
+            case R.id.speech_to_text:
+                checkAudioPermission();
+                break;
+            case R.id.detect_language:
+                detectLanguage();
+                break;
+            case R.id.translate_language:
+                translateFromEnglish();
+                break;
         }
         return super.onOptionsItemSelected(menuItem);
     }
 
-    private void translateToEnglish() {
+    private void translateFromEnglish() {
         TranslatorOptions options = new TranslatorOptions.Builder()
                 .setSourceLanguage(TranslateLanguage.ENGLISH)
                 .setTargetLanguage(TranslateLanguage.HINDI)
                 .build();
+
         final Translator translator = Translation.getClient(options);
-        DownloadConditions conditions = new DownloadConditions.Builder()
-                .requireWifi()
-                .build();
+        DownloadConditions conditions = new DownloadConditions.Builder().requireWifi().build();
         translator.downloadModelIfNeeded(conditions)
                 .addOnSuccessListener(
                         unused -> {
@@ -191,7 +205,7 @@ public class AddNoteActivity extends AppCompatActivity {
                                 return;
                             }
                             translator.translate(text)
-                                    .addOnSuccessListener(this::showToast)
+                                    .addOnSuccessListener(s -> body.append("\nIn Hindi: " + s))
                                     .addOnFailureListener(e -> showToast(e.toString()));
                         })
                 .addOnFailureListener(
@@ -210,12 +224,6 @@ public class AddNoteActivity extends AppCompatActivity {
         identifier.identifyLanguage(text)
                 .addOnSuccessListener(this::showToast)
                 .addOnFailureListener(e -> showToast(e.toString()));
-    }
-
-    private void checkAudioPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, RecordAudioRequestCode);
-        else speechText();
     }
 
     private void speechText() {
@@ -291,6 +299,12 @@ public class AddNoteActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (speechRecognizer != null) speechRecognizer.destroy();
+    }
+
+    private void checkAudioPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, RecordAudioRequestCode);
+        else speechText();
     }
 
     @Override

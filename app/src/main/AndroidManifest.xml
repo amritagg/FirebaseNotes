@@ -19,6 +19,7 @@
             android:exported="false" />
         <activity
             android:name=".DrawActivity"
+            android:screenOrientation="landscape"
             android:exported="false" />
         <activity
             android:name=".AddNoteActivity"
