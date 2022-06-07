@@ -16,17 +16,20 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".CameraActivity"
+            android:launchMode="singleTop"
             android:exported="false" />
         <activity
             android:name=".DrawActivity"
-            android:screenOrientation="landscape"
+            android:launchMode="singleTop"
             android:exported="false" />
         <activity
             android:name=".AddNoteActivity"
             android:exported="false"
+            android:launchMode="singleTop"
             android:parentActivityName=".HomeActivity" />
         <activity
             android:name=".HomeActivity"
+            android:launchMode="singleTop"
             android:exported="false" />
         <activity
             android:name=".SignInActivity"

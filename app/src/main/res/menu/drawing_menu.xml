@@ -4,8 +4,8 @@
 
     <item
         android:id="@+id/detect"
+        android:icon="@drawable/ic_baseline_text_snippet_24"
         android:title="@string/detect_text"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_baseline_translate_24" />
+        app:showAsAction="ifRoom" />
 
 </menu>

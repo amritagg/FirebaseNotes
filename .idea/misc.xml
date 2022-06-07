@@ -3,11 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Amrit/AndroidStudioProjects/KeepIt/app/src/main/res/drawable/button_back.xml" value="0.1965" />
         <entry key="..\:/Users/Amrit/AndroidStudioProjects/KeepIt/app/src/main/res/drawable/circle.xml" value="0.1795" />
         <entry key="..\:/Users/Amrit/AndroidStudioProjects/KeepIt/app/src/main/res/layout/activity_add_note.xml" value="0.3623789764868603" />
         <entry key="..\:/Users/Amrit/AndroidStudioProjects/KeepIt/app/src/main/res/layout/activity_camera.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/Amrit/AndroidStudioProjects/KeepIt/app/src/main/res/layout/activity_draw.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Amrit/AndroidStudioProjects/KeepIt/app/src/main/res/layout/activity_home.xml" value="0.4083333333333333" />
+        <entry key="..\:/Users/Amrit/AndroidStudioProjects/KeepIt/app/src/main/res/layout/activity_home.xml" value="0.22" />
         <entry key="..\:/Users/Amrit/AndroidStudioProjects/KeepIt/app/src/main/res/layout/activity_signin.xml" value="0.19384057971014493" />
         <entry key="..\:/Users/Amrit/AndroidStudioProjects/KeepIt/app/src/main/res/layout/list_home.xml" value="0.5410872313527181" />
         <entry key="..\:/Users/Amrit/AndroidStudioProjects/KeepIt/app/src/main/res/menu/add_note_menu.xml" value="0.1" />

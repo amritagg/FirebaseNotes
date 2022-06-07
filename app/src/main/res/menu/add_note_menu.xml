@@ -1,28 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/add_image"
-        android:title="@string/add_image" />
+        android:id="@+id/speech_to_text"
+        android:icon="@drawable/ic_baseline_mic_24"
+        android:title="@string/speak"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/open_camera"
+        android:icon="@drawable/ic_baseline_camera_24"
+        android:title="@string/open_camera"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/translate_language"
+        android:icon="@drawable/ic_baseline_translate_24"
+        android:title="@string/translate"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/add_drawing"
         android:title="@string/add_drawing" />
 
     <item
-        android:id="@+id/open_camera"
-        android:title="@string/open_camera" />
-
-    <item
-        android:id="@+id/speech_to_text"
-        android:title="@string/speak" />
-
-    <item
         android:id="@+id/detect_language"
         android:title="@string/detect_language" />
 
     <item
-        android:id="@+id/translate_language"
-        android:title="@string/translate" />
+        android:id="@+id/add_image"
+        android:icon="@drawable/ic_baseline_image_24"
+        android:title="@string/add_image"
+        app:showAsAction="ifRoom" />
 
 </menu>

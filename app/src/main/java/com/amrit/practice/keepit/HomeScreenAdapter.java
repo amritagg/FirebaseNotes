@@ -1,7 +1,6 @@
 package com.amrit.practice.keepit;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,11 +17,9 @@ import java.util.List;
 public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenViewHolder> {
 
     private final List<NoteEntity> noteList;
-    private final Context context;
 
-    public HomeScreenAdapter(List<NoteEntity> noteList, Context context) {
+    public HomeScreenAdapter(List<NoteEntity> noteList) {
         this.noteList = noteList;
-        this.context = context;
     }
 
     @NonNull
@@ -44,8 +41,8 @@ public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenViewHolder
             holder.body.setVisibility(View.VISIBLE);
             holder.body.setText(note.getBody());
         }
-        if(note.getHead().equals("")) holder.head.setVisibility(View.GONE);
-        else{
+        if (note.getHead().equals("")) holder.head.setVisibility(View.GONE);
+        else {
             holder.head.setVisibility(View.VISIBLE);
             holder.head.setText(note.getHead());
         }
@@ -58,7 +55,6 @@ public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenViewHolder
             Bundle bundle = new Bundle();
             bundle.putString(Constants.INTENT_HEAD, note.getHead());
             bundle.putString(Constants.INTENT_BODY, note.getBody());
-            bundle.putLong(Constants.INTENT_DATE, note.getDate());
             bundle.putString(Constants.INTENT_ID, note.getId());
             intent.putExtra(Constants.INTENT_BUNDLE, bundle);
             view.getContext().startActivity(intent);

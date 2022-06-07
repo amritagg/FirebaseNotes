@@ -1,34 +1,30 @@
 package com.amrit.practice.keepit;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.text.TextRecognition;
-import com.google.mlkit.vision.text.TextRecognizer;
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
-
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class DrawActivity extends AppCompatActivity {
 
     //    private RangeSlider rangeSlider;
     int mDefaultColor;
     private DrawView paint;
-    ArrayList<Stroke> list;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -37,13 +33,6 @@ public class DrawActivity extends AppCompatActivity {
         setContentView(R.layout.activity_draw);
 
         paint = findViewById(R.id.draw_view);
-        Intent intent = getIntent();
-        if(intent.hasExtra(Constants.ADD_DRAW_BUNDLE)) {
-            Bundle bundle = intent.getExtras();
-            list = bundle.getParcelableArrayList(Constants.INTENT_DRAW_STROKES);
-            paint.setPaths(list);
-        }
-
 
         mDefaultColor = ContextCompat.getColor(DrawActivity.this, android.R.color.holo_red_dark);
 
@@ -67,44 +56,42 @@ public class DrawActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == android.R.id.home) {
-            returnData();
+            finish();
             return true;
-        }else if(menuItem.getItemId() == R.id.detect){
-            recognizeText();
+        } else if (menuItem.getItemId() == R.id.detect) {
+            saveImage();
             return true;
         }
         return super.onOptionsItemSelected(menuItem);
     }
 
-    private void recognizeText() {
+    private void saveImage() {
         Bitmap bitmap = paint.save();
-        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-        InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
-        recognizer.process(inputImage)
-                .addOnSuccessListener(visionText -> {
-                    Intent returnIntent = new Intent();
-                    Bundle bundle = new Bundle();
-                    bundle.putString(Constants.INTENT_MEDIA_URI, visionText.getText());
-                    returnIntent.putExtras(bundle);
-                    setResult(Activity.RESULT_OK, returnIntent);
-                    finish();
-                })
-                .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show());
-    }
+        String FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
+        String name = new SimpleDateFormat(FILENAME_FORMAT, Locale.ENGLISH).format(System.currentTimeMillis());
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
 
-    @Override
-    public void onBackPressed() {
-        returnData();
-        super.onBackPressed();
-    }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Notes-Draw");
+        }
 
-    private void returnData() {
-        Intent returnIntent = new Intent();
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(Constants.INTENT_DRAWING_STROKES, paint.getPaths());
-        returnIntent.putExtras(bundle);
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
+        OutputStream imageOutStream;
+        Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+
+        try {
+            imageOutStream = getContentResolver().openOutputStream(uri);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, imageOutStream);
+            imageOutStream.close();
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra(Constants.INTENT_MEDIA_URI, uri.toString());
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

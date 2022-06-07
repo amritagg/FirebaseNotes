@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -32,7 +33,12 @@ import com.google.mlkit.nl.translate.TranslateLanguage;
 import com.google.mlkit.nl.translate.Translation;
 import com.google.mlkit.nl.translate.Translator;
 import com.google.mlkit.nl.translate.TranslatorOptions;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.TextRecognizer;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -42,31 +48,32 @@ import java.util.Map;
 public class AddNoteActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = AddNoteActivity.class.getSimpleName();
-    public static final Integer RecordAudioRequestCode = 1;
-    DatabaseReference mDb;
+    public static final int RecordAudioRequestCode = 1;
     EditText head, body;
-    String headText, bodyText, userId, prevBody, prevHead, prevId;
-    long date, prevDate;
-    boolean update;
-    ArrayList<Stroke> list;
-    Toast mToast;
+    private DatabaseReference mDb;
+    private String prevBody;
+    private String prevHead;
+    private String prevId;
+    private boolean update;
+    private ArrayList<Stroke> list;
+    private Toast mToast;
+    private Uri uri;
 
-    ActivityResultLauncher<Intent> startDrawActivity = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> startDrawActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent data = result.getData();
                     assert data != null;
-                    Bundle bundle = data.getExtras();
-                    String text = bundle.getString(Constants.INTENT_MEDIA_URI);
-                    body.append("\t" + text);
-                    list = bundle.getParcelableArrayList(Constants.INTENT_DRAWING_STROKES);
-//                    Log.e(LOG_TAG, list.toString());
+                    String uriString = data.getStringExtra(Constants.INTENT_MEDIA_URI);
+                    uri = Uri.parse(uriString);
+                    Log.e(LOG_TAG, uriString);
+                    detectText();
                 }
             }
     );
 
-    ActivityResultLauncher<Intent> captureImageForText = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> startCameraActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -74,10 +81,24 @@ public class AddNoteActivity extends AppCompatActivity {
                     assert data != null;
                     Bundle bundle = data.getExtras();
                     String uriString = bundle.getString(Constants.INTENT_MEDIA_URI);
-                    body.append(uriString);
+                    uri = Uri.parse(uriString);
+                    detectText();
                 }
             }
     );
+
+    private final ActivityResultLauncher<Intent> startImagePickerActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    assert data != null;
+                    uri = data.getData();
+                    detectText();
+                }
+            }
+    );
+
     private SpeechRecognizer speechRecognizer;
 
     @Override
@@ -89,42 +110,57 @@ public class AddNoteActivity extends AppCompatActivity {
         body = findViewById(R.id.body);
 
         Intent intent = getIntent();
+        if(intent.hasExtra(Constants.INTENT_OPEN_NEXT)){
+            String val = intent.getStringExtra(Constants.INTENT_OPEN_NEXT);
+            if(val.equals(Constants.OPEN_CAMERA)){
+                Intent intent1 = new Intent(this, CameraActivity.class);
+                startCameraActivity.launch(intent1);
+            }else if(val.equals(Constants.OPEN_IMAGE)){
+                Intent intent3 = new Intent(Intent.ACTION_PICK);
+                intent3.setType("image/*");
+                startImagePickerActivity.launch(intent3);
+            }else if(val.equals(Constants.OPEN_DRAWING)){
+                Intent intent1 = new Intent(this, DrawActivity.class);
+                startDrawActivity.launch(intent1);
+            }
+        }
         if (intent.hasExtra(Constants.INTENT_BUNDLE)) {
             Bundle bundle = intent.getBundleExtra(Constants.INTENT_BUNDLE);
             prevBody = bundle.getString(Constants.INTENT_BODY);
             prevHead = bundle.getString(Constants.INTENT_HEAD);
             prevId = bundle.getString(Constants.INTENT_ID);
-            prevDate = bundle.getLong(Constants.INTENT_DATE, 0);
             list = bundle.getParcelableArrayList(Constants.INTENT_DRAW_STROKES_FROM_FIREBASE);
 
             head.setText(prevHead);
             body.setText(prevBody);
             update = true;
         } else {
-            prevDate = -1;
             prevBody = null;
             prevHead = null;
             prevId = null;
             update = false;
         }
 
-        userId = FirebaseAuth.getInstance().getUid();
-        mDb = FirebaseDatabase.getInstance().getReference().child(Constants.FIRE_NOTE).child(userId);
+        String userId = FirebaseAuth.getInstance().getUid();
+        if (userId != null) {
+            mDb = FirebaseDatabase.getInstance().getReference().child(Constants.FIRE_NOTE).child(userId);
+        }
     }
 
     private void saveNote() {
         Log.e(LOG_TAG, "crate message is called");
-        headText = head.getText().toString();
-        bodyText = body.getText().toString();
+        String headText = head.getText().toString();
+        String bodyText = body.getText().toString();
         Map<String, Object> newMessageMap = new HashMap<>();
 
         String id;
+        long date;
         if (update) {
-            date = prevDate;
+            Log.e(LOG_TAG, prevId);
             id = prevId;
             if (prevHead.equals(headText) && prevBody.equals(bodyText)) return;
             if (headText.isEmpty() && bodyText.isEmpty()) {
-                mDb.child(id).getRef().removeValue();
+                mDb.child(id).removeValue();
                 showToast("Note deleted!");
                 return;
             }
@@ -139,8 +175,8 @@ public class AddNoteActivity extends AppCompatActivity {
         assert id != null;
 
         DatabaseReference messageDb = mDb.child(id);
-        newMessageMap.put(Constants.FIRE_NOTE_HEAD, headText);
-        newMessageMap.put(Constants.FIRE_NOTE_BODY, bodyText);
+        newMessageMap.put(Constants.FIRE_NOTE_HEAD, headText.trim());
+        newMessageMap.put(Constants.FIRE_NOTE_BODY, bodyText.trim());
         newMessageMap.put(Constants.FIRE_NOTE_LAST_UPDATE, date);
         messageDb.updateChildren(newMessageMap);
         Log.e(LOG_TAG, "Messaged pushed");
@@ -160,20 +196,18 @@ public class AddNoteActivity extends AppCompatActivity {
                 saveNote();
                 finish();
                 break;
+            case R.id.add_image:
+                Intent intent3 = new Intent(Intent.ACTION_PICK);
+                intent3.setType("image/*");
+                startImagePickerActivity.launch(intent3);
+                break;
             case R.id.add_drawing:
                 Intent intent = new Intent(this, DrawActivity.class);
-                if (update) {
-                    if (list != null) {
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelableArrayList(Constants.INTENT_DRAW_STROKES, list);
-                        intent.putExtra(Constants.ADD_DRAW_BUNDLE, bundle);
-                    }
-                }
                 startDrawActivity.launch(intent);
                 break;
             case R.id.open_camera:
                 Intent intent1 = new Intent(this, CameraActivity.class);
-                captureImageForText.launch(intent1);
+                startCameraActivity.launch(intent1);
                 break;
             case R.id.speech_to_text:
                 checkAudioPermission();
@@ -186,6 +220,20 @@ public class AddNoteActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    private void detectText() {
+        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+        try {
+            InputImage inputImage = InputImage.fromFilePath(this, uri);
+
+            recognizer.process(inputImage)
+                    .addOnSuccessListener(visionText -> body.append("\nAfter detection: "+visionText.getText().trim()))
+                    .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void translateFromEnglish() {
@@ -271,8 +319,8 @@ public class AddNoteActivity extends AppCompatActivity {
             public void onResults(Bundle bundle) {
                 ArrayList<String> data = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                 if (body.getText().toString().equals(""))
-                    body.append(data.get(0));
-                else body.append(" " + data.get(0));
+                    body.append(data.get(0).trim());
+                else body.append(" " + data.get(0).trim());
             }
 
             @Override
