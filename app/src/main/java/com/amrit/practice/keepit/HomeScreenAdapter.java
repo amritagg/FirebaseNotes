@@ -3,6 +3,7 @@ package com.amrit.practice.keepit;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import java.util.List;
 
 public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenViewHolder> {
 
+    private static final String LOG_TAG = HomeScreenAdapter.class.getSimpleName();
     private final List<NoteEntity> noteList;
 
     public HomeScreenAdapter(List<NoteEntity> noteList) {
@@ -36,6 +38,7 @@ public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenViewHolder
     @Override
     public void onBindViewHolder(@NonNull HomeScreenViewHolder holder, int position) {
         NoteEntity note = noteList.get(position);
+        Log.e(LOG_TAG, note.getImages().toString());
         if (note.getBody().equals("")) holder.body.setVisibility(View.GONE);
         else {
             holder.body.setVisibility(View.VISIBLE);
@@ -56,6 +59,8 @@ public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenViewHolder
             bundle.putString(Constants.INTENT_HEAD, note.getHead());
             bundle.putString(Constants.INTENT_BODY, note.getBody());
             bundle.putString(Constants.INTENT_ID, note.getId());
+            bundle.putStringArrayList(Constants.INTENT_IMAGES, note.getImages());
+            bundle.putStringArrayList(Constants.INTENT_IMAGE_KEYS, note.getKeys());
             intent.putExtra(Constants.INTENT_BUNDLE, bundle);
             view.getContext().startActivity(intent);
         });

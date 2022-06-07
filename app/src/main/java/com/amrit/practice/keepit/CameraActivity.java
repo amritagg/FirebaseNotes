@@ -86,7 +86,7 @@ public class CameraActivity extends AppCompatActivity {
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraApp-Image");
+            contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Notes-Image");
         }
 
         ContentResolver contentResolver = getContentResolver();

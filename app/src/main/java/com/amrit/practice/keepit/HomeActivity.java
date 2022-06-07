@@ -83,6 +83,8 @@ public class HomeActivity extends AppCompatActivity {
                     String head_text = "";
                     String note_id = snapshot.getKey();
                     long time = 0L;
+                    ArrayList<String> images = new ArrayList<>();
+                    ArrayList<String> keys = new ArrayList<>();
 
                     if (snapshot.child(Constants.FIRE_NOTE_HEAD).getValue() != null)
                         head_text = Objects.requireNonNull(snapshot.child(Constants.FIRE_NOTE_HEAD).getValue()).toString();
@@ -93,8 +95,15 @@ public class HomeActivity extends AppCompatActivity {
                     if (snapshot.child(Constants.FIRE_NOTE_LAST_UPDATE).getValue() != null)
                         time = Long.parseLong(Objects.requireNonNull(snapshot.child(Constants.FIRE_NOTE_LAST_UPDATE).getValue()).toString());
 
+                    if (snapshot.child(Constants.FIRE_IMAGE).getValue() != null) {
+                        for (DataSnapshot mediaSnapShot : snapshot.child(Constants.FIRE_IMAGE).getChildren()) {
+                            keys.add(mediaSnapShot.getKey());
+                            images.add(Objects.requireNonNull(mediaSnapShot.getValue()).toString());
+                        }
+                    }
+
                     if (!noteId.contains(note_id)) {
-                        NoteEntity noteEntity = new NoteEntity(note_id, head_text, body_text, time);
+                        NoteEntity noteEntity = new NoteEntity(note_id, head_text, body_text, time, images, keys);
                         noteList.add(noteEntity);
                         noteList.sort(Comparator.comparing(NoteEntity::getDate));
                         Collections.reverse(noteList);

@@ -3,12 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".AddNoteActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".AddNoteActivity">
+        android:paddingBottom="80dp">
+
+        <ImageView
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <EditText
             android:id="@+id/head"
@@ -16,11 +23,9 @@
             android:layout_height="wrap_content"
             android:autofillHints="Title"
             android:hint="@string/title"
+            app:layout_constraintTop_toBottomOf="@id/view_pager"
             android:inputType="textMultiLine|textCapSentences"
-            android:textSize="22sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="22sp" />
 
         <EditText
             android:id="@+id/body"
@@ -31,12 +36,9 @@
             android:background="@null"
             android:gravity="start|top"
             android:hint="@string/note"
+            app:layout_constraintTop_toBottomOf="@id/head"
             android:inputType="textMultiLine|textCapSentences"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/head" />
+            android:textSize="18sp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

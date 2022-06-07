@@ -10,6 +10,8 @@ public class Constants {
     public static final String INTENT_DRAW_STROKES_FROM_FIREBASE = "draw_from_firebase";
     public static final String INTENT_MEDIA_URI = "image_uri";
     public static final String INTENT_OPEN_NEXT = "open_next";
+    public static final String INTENT_IMAGES = "intent_images";
+    public static final String INTENT_IMAGE_KEYS = "intent_image_key";
     public static final String ADD_DRAW_BUNDLE = "add_draw_bundle";
     public static final String OPEN_IMAGE = "image";
     public static final String OPEN_DRAWING = "drawing";
@@ -24,6 +26,7 @@ public class Constants {
     public static String FIRE_NOTE_HEAD = "head";
     public static String FIRE_NOTE_BODY = "body";
     public static String FIRE_NOTE_LAST_UPDATE = "update_time";
+    public static String FIRE_IMAGE = "image";
 
 
 }
