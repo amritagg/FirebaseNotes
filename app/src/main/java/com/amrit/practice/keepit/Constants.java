@@ -12,6 +12,8 @@ public class Constants {
     public static final String INTENT_OPEN_NEXT = "open_next";
     public static final String INTENT_IMAGES = "intent_images";
     public static final String INTENT_IMAGE_KEYS = "intent_image_key";
+    public static final String INTENT_PAGER_URIS = "pager_uris";
+    public static final String INTENT_IMAGE_URI = "intent_image_uri";
     public static final String ADD_DRAW_BUNDLE = "add_draw_bundle";
     public static final String OPEN_IMAGE = "image";
     public static final String OPEN_DRAWING = "drawing";

@@ -37,7 +37,7 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewPagerViewHolder holder, int position) {
         Log.e(LOG_TAG, images.get(position));
-        Glide.with(context).load(images.get(position)).load(holder.image);
+        Glide.with(context).load(images.get(position)).into(holder.image);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
 
         public ViewPagerViewHolder(@NonNull View itemView) {
             super(itemView);
-            image = itemView.findViewById(R.id.view_page_image);
+            image = itemView.findViewById(R.id.show_image_view_pager_image);
         }
     }
 }

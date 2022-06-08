@@ -171,6 +171,12 @@ public class AddNoteActivity extends AppCompatActivity {
             showImage.setVisibility(View.VISIBLE);
             Glide.with(this).load(fireImages.get(0)).into(showImage);
         }
+
+        showImage.setOnClickListener(view -> {
+            Intent pagerIntent = new Intent(AddNoteActivity.this, ImagePagerActivity.class);
+            pagerIntent.putStringArrayListExtra(Constants.INTENT_PAGER_URIS, fireImages);
+            startActivity(pagerIntent);
+        });
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")

@@ -3,6 +3,7 @@ package com.amrit.practice.keepit;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,6 +13,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
+
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class DrawView extends View {
@@ -55,6 +60,13 @@ public class DrawView extends View {
 
     public void init(int height, int width) {
         mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        mCanvas = new Canvas(mBitmap);
+        currentColor = Color.RED;
+        strokeWidth = 20;
+    }
+
+    public void init(String uri) {
+        mBitmap = MyCache.getInstance().retrieveBitmapFromCache(uri);
         mCanvas = new Canvas(mBitmap);
         currentColor = Color.RED;
         strokeWidth = 20;
@@ -148,5 +160,6 @@ public class DrawView extends View {
     public ArrayList<Stroke> getPaths(){
         return paths;
     }
+
 
 }

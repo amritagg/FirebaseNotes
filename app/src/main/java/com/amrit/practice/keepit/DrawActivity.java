@@ -25,12 +25,18 @@ public class DrawActivity extends AppCompatActivity {
     //    private RangeSlider rangeSlider;
     int mDefaultColor;
     private DrawView paint;
+    String uri;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw);
+
+        Intent intent = getIntent();
+        if(intent.hasExtra(Constants.INTENT_IMAGE_URI)){
+            uri = intent.getStringExtra(Constants.INTENT_IMAGE_URI);
+        }else uri = null;
 
         paint = findViewById(R.id.draw_view);
 
@@ -43,7 +49,8 @@ public class DrawActivity extends AppCompatActivity {
                 paint.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int width = paint.getMeasuredWidth();
                 int height = paint.getMeasuredHeight();
-                paint.init(height, width);
+                if(uri == null) paint.init(height, width);
+                else paint.init(uri);
             }
         });
     }

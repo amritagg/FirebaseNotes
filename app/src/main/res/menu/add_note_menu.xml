@@ -22,7 +22,9 @@
 
     <item
         android:id="@+id/add_drawing"
-        android:title="@string/add_drawing" />
+        android:icon="@drawable/ic_baseline_brush_24"
+        android:title="@string/add_drawing"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/detect_language"
