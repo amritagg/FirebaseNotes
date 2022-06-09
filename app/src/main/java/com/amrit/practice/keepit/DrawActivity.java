@@ -22,10 +22,10 @@ import java.util.Locale;
 
 public class DrawActivity extends AppCompatActivity {
 
-    //    private RangeSlider rangeSlider;
     int mDefaultColor;
-    private DrawView paint;
     String uri;
+    int pos = -1;
+    private DrawView paint;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -33,10 +33,12 @@ public class DrawActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw);
 
-        Intent intent = getIntent();
-        if(intent.hasExtra(Constants.INTENT_IMAGE_URI)){
-            uri = intent.getStringExtra(Constants.INTENT_IMAGE_URI);
-        }else uri = null;
+//        Intent intent = getIntent();
+//        if(intent.hasExtra(Constants.INTENT_IMAGE_URI)){
+//            uri = intent.getStringExtra(Constants.INTENT_IMAGE_URI);
+//            pos = intent.getIntExtra(Constants.INTENT_IMAGE_POS, -1);
+//        }else
+        uri = null;
 
         paint = findViewById(R.id.draw_view);
 
@@ -49,8 +51,8 @@ public class DrawActivity extends AppCompatActivity {
                 paint.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int width = paint.getMeasuredWidth();
                 int height = paint.getMeasuredHeight();
-                if(uri == null) paint.init(height, width);
-                else paint.init(uri);
+                if (uri != null) paint.init(uri);
+                else paint.init(height, width);
             }
         });
     }
@@ -93,6 +95,7 @@ public class DrawActivity extends AppCompatActivity {
             imageOutStream.close();
             Intent returnIntent = new Intent();
             returnIntent.putExtra(Constants.INTENT_MEDIA_URI, uri.toString());
+            returnIntent.putExtra(Constants.INTENT_IMAGE_POS, pos);
             setResult(Activity.RESULT_OK, returnIntent);
             finish();
         } catch (Exception e) {

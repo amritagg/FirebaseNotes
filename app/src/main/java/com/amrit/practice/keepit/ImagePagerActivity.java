@@ -64,10 +64,10 @@ public class ImagePagerActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.image_pager_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.image_pager_menu, menu);
+//        return super.onCreateOptionsMenu(menu);
+//    }
 
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.paint_cur) {
@@ -84,6 +84,7 @@ public class ImagePagerActivity extends AppCompatActivity {
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                 MyCache.getInstance().saveBitmapToCache(uris.get(cur), resource);
                 intent.putExtra(Constants.INTENT_IMAGE_URI, uris.get(cur));
+//                intent.putExtra(Constants.INTENT_IMAGE_POS, cur);
                 startActivity(intent);
             }
 

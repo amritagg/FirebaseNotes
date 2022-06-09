@@ -65,6 +65,11 @@ public class AddNoteActivity extends AppCompatActivity {
     private Uri uri;
     private String userId;
     private ArrayList<String> localImages;
+    private ArrayList<String> fireImages;
+    private ImageView showImage;
+    private ArrayList<String> keys;
+    private SpeechRecognizer speechRecognizer;
+
     private final ActivityResultLauncher<Intent> startDrawActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -105,10 +110,6 @@ public class AddNoteActivity extends AppCompatActivity {
                 }
             }
     );
-    private ImageView showImage;
-    private ArrayList<String> keys;
-    private ArrayList<String> fireImages;
-    private SpeechRecognizer speechRecognizer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,7 +175,10 @@ public class AddNoteActivity extends AppCompatActivity {
 
         showImage.setOnClickListener(view -> {
             Intent pagerIntent = new Intent(AddNoteActivity.this, ImagePagerActivity.class);
-            pagerIntent.putStringArrayListExtra(Constants.INTENT_PAGER_URIS, fireImages);
+            ArrayList<String> temp = new ArrayList<>();
+            temp.addAll(fireImages);
+            temp.addAll(localImages);
+            pagerIntent.putStringArrayListExtra(Constants.INTENT_PAGER_URIS, temp);
             startActivity(pagerIntent);
         });
     }

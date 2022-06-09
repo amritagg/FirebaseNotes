@@ -3,7 +3,6 @@ package com.amrit.practice.keepit;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,10 +12,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class DrawView extends View {
@@ -25,23 +20,18 @@ public class DrawView extends View {
 
     private static final float TOUCH_TOLERANCE = 4;
     private final Paint mPaint;
-    private ArrayList<Stroke> paths = new ArrayList<>();
     private final Paint mBitmapPaint = new Paint(Paint.DITHER_FLAG);
+    private final ArrayList<Stroke> paths = new ArrayList<>();
     private float mX, mY;
     private Path mPath;
     private int currentColor;
     private int strokeWidth;
     private Bitmap mBitmap;
     private Canvas mCanvas;
+    private boolean isImage = false;
 
     public DrawView(Context context) {
         this(context, null);
-    }
-
-    public void setPaths(ArrayList<Stroke> path){
-        paths = path;
-        Log.e(LOG_TAG, paths.size() + " size");
-//        invalidate();
     }
 
     public DrawView(Context context, AttributeSet attrs) {
@@ -59,6 +49,7 @@ public class DrawView extends View {
     }
 
     public void init(int height, int width) {
+        isImage = false;
         mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
         currentColor = Color.RED;
@@ -66,6 +57,7 @@ public class DrawView extends View {
     }
 
     public void init(String uri) {
+        isImage = true;
         mBitmap = MyCache.getInstance().retrieveBitmapFromCache(uri);
         mCanvas = new Canvas(mBitmap);
         currentColor = Color.RED;
@@ -76,17 +68,6 @@ public class DrawView extends View {
         currentColor = color;
     }
 
-    public void setStrokeWidth(int width) {
-        strokeWidth = width;
-    }
-
-    public void undo() {
-        if (paths.size() != 0) {
-            paths.remove(paths.size() - 1);
-            invalidate();
-        }
-    }
-
     public Bitmap save() {
         return mBitmap;
     }
@@ -95,8 +76,10 @@ public class DrawView extends View {
     protected void onDraw(Canvas canvas) {
         canvas.save();
 
-        int backgroundColor = Color.WHITE;
-        mCanvas.drawColor(backgroundColor);
+        if (!isImage) {
+            int backgroundColor = Color.WHITE;
+            mCanvas.drawColor(backgroundColor);
+        }
 
         for (Stroke fp : paths) {
             mPaint.setColor(fp.color);
@@ -156,10 +139,5 @@ public class DrawView extends View {
         }
         return true;
     }
-
-    public ArrayList<Stroke> getPaths(){
-        return paths;
-    }
-
 
 }
