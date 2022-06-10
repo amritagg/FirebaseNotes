@@ -65,11 +65,6 @@ public class AddNoteActivity extends AppCompatActivity {
     private Uri uri;
     private String userId;
     private ArrayList<String> localImages;
-    private ArrayList<String> fireImages;
-    private ImageView showImage;
-    private ArrayList<String> keys;
-    private SpeechRecognizer speechRecognizer;
-
     private final ActivityResultLauncher<Intent> startDrawActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -110,6 +105,10 @@ public class AddNoteActivity extends AppCompatActivity {
                 }
             }
     );
+    private ArrayList<String> fireImages;
+    private ImageView showImage;
+    private ArrayList<String> keys;
+    private SpeechRecognizer speechRecognizer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -340,7 +339,10 @@ public class AddNoteActivity extends AppCompatActivity {
             InputImage inputImage = InputImage.fromFilePath(this, uri);
 
             recognizer.process(inputImage)
-                    .addOnSuccessListener(visionText -> body.append("\nAfter detection: " + visionText.getText().trim()))
+                    .addOnSuccessListener(visionText -> {
+                        body.append("\nAfter detection: " + visionText.getText().trim());
+                        body.setText(body.getText().toString().trim());
+                    })
                     .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show());
 
         } catch (IOException e) {
