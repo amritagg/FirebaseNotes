@@ -3,7 +3,6 @@ package com.amrit.practice.keepit;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,17 +10,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,63 +71,62 @@ public class HomeActivity extends AppCompatActivity {
         noteList.clear();
         noteId.clear();
         noteAdapter.notifyDataSetChanged();
-        mDb.addChildEventListener(new ChildEventListener() {
-            @SuppressLint("NotifyDataSetChanged")
+        mDb.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
             @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Log.e(LOG_TAG, "is should update now");
-                if (snapshot.exists()) {
-                    String body_text = "";
-                    String head_text = "";
-                    String note_id = snapshot.getKey();
-                    long time = 0L;
-                    ArrayList<String> images = new ArrayList<>();
-                    ArrayList<String> keys = new ArrayList<>();
+            public void onDataChange(@NonNull DataSnapshot snap) {
+                if (snap.exists()) {
+                    for (DataSnapshot snapshot : snap.getChildren()) {
+                        String body_text = "";
+                        String head_text = "";
+                        String note_id = snapshot.getKey();
+                        long time = 0L;
+                        ArrayList<String> images = new ArrayList<>();
+                        ArrayList<String> keys = new ArrayList<>();
 
-                    if (snapshot.child(Constants.FIRE_NOTE_HEAD).getValue() != null)
-                        head_text = Objects.requireNonNull(snapshot.child(Constants.FIRE_NOTE_HEAD).getValue()).toString();
+                        if (snapshot.child(Constants.FIRE_NOTE_HEAD).getValue() != null)
+                            head_text = Objects.requireNonNull(snapshot.child(Constants.FIRE_NOTE_HEAD).getValue()).toString();
 
-                    if (snapshot.child(Constants.FIRE_NOTE_BODY).getValue() != null)
-                        body_text = Objects.requireNonNull(snapshot.child(Constants.FIRE_NOTE_BODY).getValue()).toString();
+                        if (snapshot.child(Constants.FIRE_NOTE_BODY).getValue() != null)
+                            body_text = Objects.requireNonNull(snapshot.child(Constants.FIRE_NOTE_BODY).getValue()).toString();
 
-                    if (snapshot.child(Constants.FIRE_NOTE_LAST_UPDATE).getValue() != null)
-                        time = Long.parseLong(Objects.requireNonNull(snapshot.child(Constants.FIRE_NOTE_LAST_UPDATE).getValue()).toString());
+                        if (snapshot.child(Constants.FIRE_NOTE_LAST_UPDATE).getValue() != null)
+                            time = Long.parseLong(Objects.requireNonNull(snapshot.child(Constants.FIRE_NOTE_LAST_UPDATE).getValue()).toString());
 
-                    if (snapshot.child(Constants.FIRE_IMAGE).getValue() != null) {
-                        for (DataSnapshot mediaSnapShot : snapshot.child(Constants.FIRE_IMAGE).getChildren()) {
-                            keys.add(mediaSnapShot.getKey());
-                            images.add(Objects.requireNonNull(mediaSnapShot.getValue()).toString());
+                        if (snapshot.child(Constants.FIRE_IMAGE).getValue() != null) {
+                            for (DataSnapshot mediaSnapShot : snapshot.child(Constants.FIRE_IMAGE).getChildren()) {
+                                keys.add(mediaSnapShot.getKey());
+                                images.add(Objects.requireNonNull(mediaSnapShot.getValue()).toString());
+                            }
+                        }
+
+                        if (!noteId.contains(note_id)) {
+                            NoteEntity noteEntity = new NoteEntity(note_id, head_text, body_text, time, images, keys);
+                            noteList.add(noteEntity);
+                            noteId.add(note_id);
                         }
                     }
-
-                    if (!noteId.contains(note_id)) {
-                        NoteEntity noteEntity = new NoteEntity(note_id, head_text, body_text, time, images, keys);
-                        noteList.add(noteEntity);
+                    if (snap.getChildrenCount() == 0) {
+                        textView.setVisibility(View.VISIBLE);
+                        textView.setText("No Notes yet");
+                    } else {
+                        textView.setVisibility(View.GONE);
                         noteList.sort(Comparator.comparing(NoteEntity::getDate));
                         Collections.reverse(noteList);
-                        noteAdapter.notifyDataSetChanged();
-                        progressBar.setVisibility(View.GONE);
-                        noteId.add(note_id);
                     }
+                    noteAdapter.notifyDataSetChanged();
+                    progressBar.setVisibility(View.GONE);
+                } else {
+                    textView.setVisibility(View.VISIBLE);
+                    textView.setText("No Notes yet");
+                    progressBar.setVisibility(View.GONE);
                 }
             }
 
             @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-            }
-
-            @Override
             public void onCancelled(@NonNull DatabaseError error) {
-            }
 
+            }
         });
     }
 
@@ -170,6 +167,12 @@ public class HomeActivity extends AppCompatActivity {
         } else if (menuItem.getItemId() == R.id.add_drawing) {
             Intent intent = new Intent(this, AddNoteActivity.class);
             intent.putExtra(Constants.INTENT_OPEN_NEXT, Constants.OPEN_DRAWING);
+            startActivity(intent);
+            return true;
+        } else if (menuItem.getItemId() == R.id.logout) {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             return true;
         }

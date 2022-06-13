@@ -36,4 +36,9 @@
         android:title="@string/add_image"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/logout"
+        android:title="@string/log_out"
+        app:showAsAction="ifRoom" />
+
 </menu>

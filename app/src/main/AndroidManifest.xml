@@ -33,11 +33,13 @@
         <activity
             android:name=".DrawActivity"
             android:exported="false"
+            android:label="Draw"
             android:launchMode="singleTop"
             android:parentActivityName=".AddNoteActivity" />
         <activity
             android:name=".AddNoteActivity"
             android:exported="false"
+            android:label="Add Note"
             android:launchMode="singleTop"
             android:parentActivityName=".HomeActivity" />
         <activity

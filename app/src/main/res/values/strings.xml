@@ -11,4 +11,5 @@
     <string name="translate">Translate</string>
     <string name="detect_text">Detect Text</string>
     <string name="open_in_drawing">Open In Drawing</string>
+    <string name="log_out">Log Out</string>
 </resources>

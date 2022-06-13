@@ -6,8 +6,6 @@ public class Constants {
     public static final String INTENT_ID = "intent_id";
     public static final String INTENT_BODY = "intent_body";
     public static final String INTENT_BUNDLE = "intent_bundle";
-    public static final String INTENT_DRAW_STROKES = "draw_strokes";
-    public static final String INTENT_DRAW_STROKES_FROM_FIREBASE = "draw_from_firebase";
     public static final String INTENT_MEDIA_URI = "image_uri";
     public static final String INTENT_OPEN_NEXT = "open_next";
     public static final String INTENT_IMAGES = "intent_images";
@@ -15,7 +13,6 @@ public class Constants {
     public static final String INTENT_PAGER_URIS = "pager_uris";
     public static final String INTENT_IMAGE_URI = "intent_image_uri";
     public static final String INTENT_IMAGE_POS = "image_pos";
-    public static final String ADD_DRAW_BUNDLE = "add_draw_bundle";
     public static final String OPEN_IMAGE = "image";
     public static final String OPEN_DRAWING = "drawing";
     public static final String OPEN_CAMERA = "camera";

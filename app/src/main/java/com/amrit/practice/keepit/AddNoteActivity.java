@@ -296,6 +296,7 @@ public class AddNoteActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_note_menu, menu);
+        menu.findItem(R.id.logout).setVisible(false);
         return super.onCreateOptionsMenu(menu);
     }
 
