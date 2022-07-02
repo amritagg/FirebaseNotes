@@ -68,13 +68,13 @@ public class HomeActivity extends AppCompatActivity {
 
     @SuppressLint("NotifyDataSetChanged")
     private void getNotes() {
-        noteList.clear();
-        noteId.clear();
-        noteAdapter.notifyDataSetChanged();
         mDb.addValueEventListener(new ValueEventListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onDataChange(@NonNull DataSnapshot snap) {
+                noteList.clear();
+                noteId.clear();
+                noteAdapter.notifyDataSetChanged();
                 if (snap.exists()) {
                     for (DataSnapshot snapshot : snap.getChildren()) {
                         String body_text = "";
@@ -114,13 +114,12 @@ public class HomeActivity extends AppCompatActivity {
                         noteList.sort(Comparator.comparing(NoteEntity::getDate));
                         Collections.reverse(noteList);
                     }
-                    noteAdapter.notifyDataSetChanged();
-                    progressBar.setVisibility(View.GONE);
                 } else {
                     textView.setVisibility(View.VISIBLE);
                     textView.setText("No Notes yet");
-                    progressBar.setVisibility(View.GONE);
                 }
+                noteAdapter.notifyDataSetChanged();
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
