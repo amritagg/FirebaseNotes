@@ -8,7 +8,7 @@ As soon as user opens the application user is asked to login or signup using goo
 
 After login/signup, the user is prompted to Home screen where the user can see all of their saved notes for their are any (for existing users)
 
-<img src="https://github.com/amritagg/FirebaseNotes/blob/master/screenshots/HOME_SCREEN.jpg" height=1000 />
+<img src="https://github.com/amritagg/FirebaseNotes/blob/master/screenshots/HOME_SCREEN.jpg" height=600 />
 
 On the home screen user is given option to create a new note using the FAB given at bottom right corner of the screen.
 
@@ -18,17 +18,20 @@ In this activity the user can write their text whatever they want to save and th
 In this screen user can use ML models.
 
 <b>Features given..</b>
+
+<img src="https://github.com/amritagg/FirebaseNotes/blob/master/screenshots/OPTION_ON_ADD_NOTE.jpg" height=600 />
+
 <ul>
     <li>User can just speak and it will get converted into text</li>
-    <img src="https://github.com/amritagg/FirebaseNotes/blob/master/screenshots/SPEECH_TO_TEXT.jpg" height=1000 />
+    <img src="https://github.com/amritagg/FirebaseNotes/blob/master/screenshots/SPEECH_TO_TEXT.jpg" height=600 />
     <li>There is a camera option from which the user can click images and also save them with notes. On top of that the text given in that image will be detected and added to note body using ML model</li>
     <li>There is a drawing option from which the user can draw anything and save them with notes. Also, if there is any language text in the drawing, that can be detected and added to note body.</li>
     <li>User can also pick the image from gallery and can detect text from that as well</li>
-    <img src="https://github.com/amritagg/FirebaseNotes/blob/master/screenshots/TEXT_DETECT.jpg" height=1000 />
+    <img src="https://github.com/amritagg/FirebaseNotes/blob/master/screenshots/TEXT_DETECT.jpg" height=600 />
     <li>If the body of note is in english language then the user can translate all of that into hindi and that text will also be appended to note body.</li>
-    <img src="https://github.com/amritagg/FirebaseNotes/blob/master/screenshots/TRANSLATION.jpg" height=1000 />
+    <img src="https://github.com/amritagg/FirebaseNotes/blob/master/screenshots/TRANSLATION.jpg" height=600 />
     <li>If the body of note is consists of only one language then user can detect that language also which can be beneficial when user copied text from somewhere but don't know about which language is that.</li>
-    <img src="https://github.com/amritagg/FirebaseNotes/blob/master/screenshots/LANGUAGE_DETECTION.jpg" height=1000 />
+    <img src="https://github.com/amritagg/FirebaseNotes/blob/master/screenshots/LANGUAGE_DETECTION.jpg" height=600 />
 </ul>
 
 For <b>saving</b> the notes, user just need to back press and all the notes will be saved automatically
